@@ -1,0 +1,21 @@
+name: CI/CD Workflow
+
+on:
+  repository_dispatch:
+    types: [qtm4j_webhook]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Parse Webhook Payload
+        run: |
+          echo "Test Cycle ID: ${{ github.event.client_payload.testCycleId }}"
+          echo "Test Case Key: ${{ github.event.client_payload.testCaseKey }}"
+
+      - name: Run Tests
+        run: |
+          ./run-tests.sh --testCycleId=${{ github.event.client_payload.testCycleId }} --testCaseKey=${{ github.event.client_payload.testCaseKey }}
