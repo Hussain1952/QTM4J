@@ -5,12 +5,13 @@ on:
     inputs:
       testCycleId:
         description: 'The ID of the test cycle'
-        required: true
+        required: false
         default: ''
       testCaseKey:
         description: 'The key of the test case'
-        required: true
+        required: false
         default: ''
+
 jobs:
   run-tests:
     runs-on: ubuntu-latest
@@ -25,4 +26,18 @@ jobs:
 
       - name: Run Tests
         run: |
-          ./run-tests.sh --testCycleId=${{ github.event.inputs.testCycleId }} --testCaseKey=${{ github.event.inputs.testCaseKey }}
+          if [ -n "${{ github.event.inputs.testCycleId }}" ]; then
+            echo "Running tests with Test Cycle ID: ${{ github.event.inputs.testCycleId }}"
+            ./run-tests.sh --testCycleId=${{ github.event.inputs.testCycleId }}
+          else
+            echo "Test Cycle ID not provided, running default tests"
+            ./run-tests.sh
+          fi
+
+          if [ -n "${{ github.event.inputs.testCaseKey }}" ]; then
+            echo "Running tests with Test Case Key: ${{ github.event.inputs.testCaseKey }}"
+            ./run-tests.sh --testCaseKey=${{ github.event.inputs.testCaseKey }}
+          else
+            echo "Test Case Key not provided, running default tests"
+            ./run-tests.sh
+          fi
